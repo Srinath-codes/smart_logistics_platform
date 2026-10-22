@@ -1,0 +1,120 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}SmartLogix{% endblock %}</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+{% block full_page %}
+<div class="app-wrapper">
+  <!-- Sidebar -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">
+        <div class="logo-icon">📦</div>
+        <div>
+          <div class="logo-text">SmartLogix</div>
+          <div class="logo-sub">Logistics Platform</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sidebar-nav">
+      {% if user.is_superuser %}
+      <div class="nav-section-label">Admin</div>
+      <a href="{% url 'admin_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_dashboard' %}active{% endif %}">
+        <span class="nav-icon">⬡</span> Dashboard
+      </a>
+      <a href="{% url 'add_goods' %}" class="nav-link {% if request.resolver_match.url_name == 'add_goods' %}active{% endif %}">
+        <span class="nav-icon">＋</span> Add Goods
+      </a>
+      <a href="{% url 'allocate_work' %}" class="nav-link {% if request.resolver_match.url_name == 'allocate_work' %}active{% endif %}">
+        <span class="nav-icon">◎</span> Allocate Work
+      </a>
+      <a href="{% url 'admin_tickets' %}" class="nav-link {% if request.resolver_match.url_name == 'admin_tickets' %}active{% endif %}">
+        <span class="nav-icon">◈</span> All Tickets
+      </a>
+      <a href="{% url 'add_employee' %}" class="nav-link {% if request.resolver_match.url_name == 'add_employee' %}active{% endif %}">
+        <span class="nav-icon">⊕</span> Add Employee
+      </a>
+      {% else %}
+      <div class="nav-section-label">Employee</div>
+      <a href="{% url 'employee_dashboard' %}" class="nav-link {% if request.resolver_match.url_name == 'employee_dashboard' %}active{% endif %}">
+        <span class="nav-icon">⬡</span> Dashboard
+      </a>
+      <a href="{% url 'create_ticket' %}" class="nav-link {% if request.resolver_match.url_name == 'create_ticket' %}active{% endif %}">
+        <span class="nav-icon">◈</span> New Ticket
+      </a>
+      <a href="{% url 'work_log' %}" class="nav-link {% if request.resolver_match.url_name == 'work_log' %}active{% endif %}">
+        <span class="nav-icon">◷</span> Work Log
+      </a>
+      {% endif %}
+
+      <div class="nav-section-label" style="margin-top:8px;">System</div>
+      <a href="/admin/" class="nav-link" target="_blank">
+        <span class="nav-icon">⚙</span> Django Admin
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <div class="avatar">{{ user.username|first|upper }}</div>
+        <div>
+          <div class="user-name">{{ user.get_full_name|default:user.username }}</div>
+          <div class="user-role">{% if user.is_superuser %}Admin{% else %}Employee{% endif %}</div>
+        </div>
+      </div>
+      <a href="{% url 'logout' %}" class="logout-btn">
+        <span>↩</span> Sign out
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <div class="main-content">
+    <div class="topbar">
+      <span class="page-title">{% block page_title %}Dashboard{% endblock %}</span>
+      <div class="topbar-actions">
+        <div class="topbar-badge">
+          <div class="status-dot"></div>
+          Online
+        </div>
+      </div>
+    </div>
+
+    <div class="content-area">
+      {% if messages %}
+      <div class="messages">
+        {% for message in messages %}
+        <div class="message message-{{ message.tags }}">
+          {% if message.tags == 'success' %}✓{% elif message.tags == 'error' %}✕{% else %}ℹ{% endif %}
+          {{ message }}
+        </div>
+        {% endfor %}
+      </div>
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+<script>
+  // Auto-dismiss messages
+  setTimeout(() => {
+    document.querySelectorAll('.message').forEach(m => {
+      m.style.transition = 'opacity 0.4s';
+      m.style.opacity = '0';
+      setTimeout(() => m.remove(), 400);
+    });
+  }, 4000);
+</script>
+{% block extra_js %}{% endblock %}
+</body>
+</html>

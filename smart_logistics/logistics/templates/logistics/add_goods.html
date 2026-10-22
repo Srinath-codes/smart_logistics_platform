@@ -1,0 +1,49 @@
+{% extends 'logistics/base.html' %}
+{% block title %}{{ title }} — SmartLogix{% endblock %}
+{% block page_title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-heading">{{ title }}</h1>
+    <p class="page-desc">{% if goods %}Update shipment details{% else %}Add new goods to inventory{% endif %}</p>
+  </div>
+  <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">← Back</a>
+</div>
+
+<div class="form-card">
+  <form method="post">
+    {% csrf_token %}
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Item Name *</label>
+        {{ form.name }}
+        {% if form.name.errors %}<div style="color:var(--red);font-size:12px;margin-top:4px;">{{ form.name.errors }}</div>{% endif %}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Quantity *</label>
+        {{ form.quantity }}
+        {% if form.quantity.errors %}<div style="color:var(--red);font-size:12px;margin-top:4px;">{{ form.quantity.errors }}</div>{% endif %}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      {{ form.description }}
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Status</label>
+        {{ form.status }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Assign To Employee</label>
+        {{ form.assigned_to }}
+      </div>
+    </div>
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">{% if goods %}Save Changes{% else %}Add Goods{% endif %}</button>
+      <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

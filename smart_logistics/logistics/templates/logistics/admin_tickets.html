@@ -1,0 +1,73 @@
+{% extends 'logistics/base.html' %}
+{% block title %}All Tickets — SmartLogix{% endblock %}
+{% block page_title %}Tickets{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-heading">All <span>Tickets</span></h1>
+    <p class="page-desc">Employee issues and requests</p>
+  </div>
+</div>
+
+<div class="filter-bar">
+  <a href="{% url 'admin_tickets' %}" class="filter-chip {% if not status_filter %}active{% endif %}">All</a>
+  <a href="?status=open" class="filter-chip {% if status_filter == 'open' %}active{% endif %}">Open</a>
+  <a href="?status=in_review" class="filter-chip {% if status_filter == 'in_review' %}active{% endif %}">In Review</a>
+  <a href="?status=resolved" class="filter-chip {% if status_filter == 'resolved' %}active{% endif %}">Resolved</a>
+  <a href="?status=closed" class="filter-chip {% if status_filter == 'closed' %}active{% endif %}">Closed</a>
+</div>
+
+<div class="card">
+  {% if tickets %}
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>#</th><th>Title</th><th>Employee</th><th>Description</th>
+          <th>Priority</th><th>Status</th><th>Date</th><th>Update</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for ticket in tickets %}
+        <tr>
+          <td style="color:var(--text3);font-family:var(--mono);">{{ ticket.pk }}</td>
+          <td style="font-weight:600;color:var(--text);">{{ ticket.title }}</td>
+          <td style="color:var(--text3);">{{ ticket.employee }}</td>
+          <td style="font-size:13px;max-width:200px;">{{ ticket.description|truncatechars:60 }}</td>
+          <td>
+            <span class="priority-indicator priority-{{ ticket.priority }}">
+              <span class="priority-dot"></span>{{ ticket.get_priority_display }}
+            </span>
+          </td>
+          <td>
+            {% if ticket.status == 'open' %}<span class="badge badge-red">Open</span>
+            {% elif ticket.status == 'in_review' %}<span class="badge badge-amber">Review</span>
+            {% elif ticket.status == 'resolved' %}<span class="badge badge-green">Resolved</span>
+            {% else %}<span class="badge badge-gray">Closed</span>{% endif %}
+          </td>
+          <td style="font-family:var(--mono);font-size:11px;color:var(--text3);">{{ ticket.created_at|date:"M d, Y" }}</td>
+          <td>
+            <form method="post" action="{% url 'update_ticket_status' ticket.pk %}">
+              {% csrf_token %}
+              <select name="status" class="form-select" style="width:auto;padding:4px 28px 4px 8px;font-size:12px;" onchange="this.form.submit()">
+                <option value="open" {% if ticket.status == 'open' %}selected{% endif %}>Open</option>
+                <option value="in_review" {% if ticket.status == 'in_review' %}selected{% endif %}>In Review</option>
+                <option value="resolved" {% if ticket.status == 'resolved' %}selected{% endif %}>Resolved</option>
+                <option value="closed" {% if ticket.status == 'closed' %}selected{% endif %}>Closed</option>
+              </select>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="empty-state">
+    <div class="empty-icon">◈</div>
+    <div class="empty-text">No tickets found{% if status_filter %} for "{{ status_filter }}"{% endif %}</div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

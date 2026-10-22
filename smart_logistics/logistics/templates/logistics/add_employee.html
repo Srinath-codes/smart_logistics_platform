@@ -1,0 +1,67 @@
+{% extends 'logistics/base.html' %}
+{% block title %}Add Employee — SmartLogix{% endblock %}
+{% block page_title %}Add Employee{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-heading">Add <span>Employee</span></h1>
+    <p class="page-desc">Create a new employee account</p>
+  </div>
+  <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">← Back</a>
+</div>
+
+<div class="form-card">
+  <form method="post">
+    {% csrf_token %}
+
+    <div style="font-size:11px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+      Account Details
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Username *</label>
+      {{ form.username }}
+      {% if form.username.errors %}<div style="color:var(--red);font-size:12px;margin-top:4px;">{{ form.username.errors }}</div>{% endif %}
+    </div>
+    <div class="form-group">
+      <label class="form-label">Password *</label>
+      {{ form.password }}
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">First Name</label>
+        {{ form.first_name }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Last Name</label>
+        {{ form.last_name }}
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Email</label>
+      {{ form.email }}
+    </div>
+
+    <div style="font-size:11px;font-family:var(--mono);color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin:20px 0 14px;padding-bottom:10px;border-bottom:1px solid var(--border);">
+      Employee Profile
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Department</label>
+        {{ form.department }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        {{ form.phone }}
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">Create Employee</button>
+      <a href="{% url 'admin_dashboard' %}" class="btn btn-secondary">Cancel</a>
+    </div>
+  </form>
+</div>
+{% endblock %}

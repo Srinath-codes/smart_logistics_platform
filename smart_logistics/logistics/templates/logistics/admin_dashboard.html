@@ -1,0 +1,283 @@
+{% extends 'logistics/base.html' %}
+{% block title %}Admin Dashboard — SmartLogix{% endblock %}
+{% block page_title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card amber">
+    <div class="stat-icon amber">👥</div>
+    <div class="stat-value">{{ total_employees }}</div>
+    <div class="stat-label">Employees</div>
+  </div>
+  <div class="stat-card blue">
+    <div class="stat-icon blue">📦</div>
+    <div class="stat-value">{{ total_goods }}</div>
+    <div class="stat-label">Total Goods</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-icon green">✓</div>
+    <div class="stat-value">{{ goods_delivered }}</div>
+    <div class="stat-label">Delivered</div>
+  </div>
+  <div class="stat-card red">
+    <div class="stat-icon red">◈</div>
+    <div class="stat-value">{{ open_tickets }}</div>
+    <div class="stat-label">Open Tickets</div>
+  </div>
+</div>
+
+<div class="dashboard-grid">
+  <!-- Goods Table -->
+  <div class="card full-width">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Goods Inventory</div>
+        <div class="card-subtitle">All shipments and their current status</div>
+      </div>
+      <div class="action-row">
+        <a href="{% url 'add_goods' %}" class="btn btn-primary btn-sm">+ Add Goods</a>
+      </div>
+    </div>
+    {% if goods %}
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th><th>Name</th><th>Qty</th><th>Status</th><th>Assigned To</th><th>Updated</th><th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in goods %}
+          <tr>
+            <td style="color:var(--text3);font-family:var(--mono);">{{ item.pk }}</td>
+            <td style="font-weight:600;color:var(--text);">{{ item.name }}</td>
+            <td style="font-family:var(--mono);">{{ item.quantity }}</td>
+            <td>
+              {% if item.status == 'pending' %}<span class="badge badge-amber">Pending</span>
+              {% elif item.status == 'in_transit' %}<span class="badge badge-blue">In Transit</span>
+              {% else %}<span class="badge badge-green">Delivered</span>{% endif %}
+            </td>
+            <td>{% if item.assigned_to %}{{ item.assigned_to }}{% else %}<span style="color:var(--text3);">—</span>{% endif %}</td>
+            <td style="font-family:var(--mono);font-size:12px;color:var(--text3);">{{ item.updated_at|date:"M d, Y" }}</td>
+            <td>
+              <div class="action-row">
+                <a href="{% url 'edit_goods' item.pk %}" class="btn btn-secondary btn-xs">Edit</a>
+                <form method="post" action="{% url 'delete_goods' item.pk %}" style="display:inline;" onsubmit="return confirm('Delete this item?')">
+                  {% csrf_token %}
+                  <button type="submit" class="btn btn-danger btn-xs">Del</button>
+                </form>
+              </div>
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">📦</div>
+      <div class="empty-text">No goods added yet</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Employees -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Employees</div>
+        <div class="card-subtitle">Staff directory</div>
+      </div>
+      <a href="{% url 'add_employee' %}" class="btn btn-secondary btn-sm">+ Add</a>
+    </div>
+    {% if employees %}
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Name</th><th>Dept</th><th>Activity</th></tr></thead>
+        <tbody>
+          {% for emp in employees %}
+          <tr>
+            <td>
+              <div style="display:flex;align-items:center;gap:8px;">
+                <div class="avatar" style="width:28px;height:28px;font-size:11px;">{{ emp.user.username|first|upper }}</div>
+                <span style="font-weight:600;color:var(--text);">{{ emp }}</span>
+              </div>
+            </td>
+            <td style="color:var(--text3);font-size:13px;">{{ emp.department|default:"—" }}</td>
+            <td><a href="{% url 'employee_activity' emp.pk %}" class="btn btn-secondary btn-xs">View</a></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">👥</div>
+      <div class="empty-text">No employees yet</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Recent Tickets -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Recent Tickets</div>
+        <div class="card-subtitle">Latest employee issues</div>
+      </div>
+      <a href="{% url 'admin_tickets' %}" class="btn btn-secondary btn-sm">View All</a>
+    </div>
+    {% if tickets %}
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Title</th><th>By</th><th>Priority</th><th>Status</th></tr></thead>
+        <tbody>
+          {% for ticket in tickets %}
+          <tr>
+            <td style="font-weight:500;color:var(--text);">{{ ticket.title|truncatechars:30 }}</td>
+            <td style="font-size:13px;color:var(--text3);">{{ ticket.employee }}</td>
+            <td>
+              <span class="priority-indicator priority-{{ ticket.priority }}">
+                <span class="priority-dot"></span>{{ ticket.get_priority_display }}
+              </span>
+            </td>
+            <td>
+              {% if ticket.status == 'open' %}<span class="badge badge-red">Open</span>
+              {% elif ticket.status == 'in_review' %}<span class="badge badge-amber">Review</span>
+              {% elif ticket.status == 'resolved' %}<span class="badge badge-green">Resolved</span>
+              {% else %}<span class="badge badge-gray">Closed</span>{% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">◈</div>
+      <div class="empty-text">No tickets yet</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Charts Row -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Goods Status</div>
+      <div class="card-subtitle">Distribution</div>
+    </div>
+    <div class="chart-container" style="height:200px;">
+      <canvas id="donutChart"></canvas>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Monthly Work Hours</div>
+      <div class="card-subtitle">Team productivity (last 6 months)</div>
+    </div>
+    <div class="chart-container" style="height:200px;">
+      <canvas id="barChart"></canvas>
+    </div>
+  </div>
+
+  <!-- Work Assignments -->
+  <div class="card full-width">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Work Assignments</div>
+        <div class="card-subtitle">All allocated tasks</div>
+      </div>
+      <a href="{% url 'allocate_work' %}" class="btn btn-primary btn-sm">+ Allocate</a>
+    </div>
+    {% if assignments %}
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Task</th><th>Employee</th><th>Status</th><th>Due Date</th></tr></thead>
+        <tbody>
+          {% for a in assignments %}
+          <tr>
+            <td style="font-weight:500;color:var(--text);">{{ a.title }}</td>
+            <td style="color:var(--text3);">{{ a.employee }}</td>
+            <td>
+              {% if a.status == 'assigned' %}<span class="badge badge-amber">Assigned</span>
+              {% elif a.status == 'in_progress' %}<span class="badge badge-blue">In Progress</span>
+              {% else %}<span class="badge badge-green">Completed</span>{% endif %}
+            </td>
+            <td style="font-family:var(--mono);font-size:12px;color:var(--text3);">{{ a.due_date|default:"—" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">◎</div>
+      <div class="empty-text">No assignments yet</div>
+    </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.0/chart.umd.min.js"></script>
+<script>
+const statusData = {{ status_data|safe }};
+const monthlyLabels = {{ monthly_labels|safe }};
+const monthlyHours = {{ monthly_hours|safe }};
+
+Chart.defaults.color = '#5a6478';
+Chart.defaults.borderColor = '#2a3040';
+Chart.defaults.font.family = "'DM Mono', monospace";
+
+// Donut chart
+new Chart(document.getElementById('donutChart'), {
+  type: 'doughnut',
+  data: {
+    labels: statusData.labels,
+    datasets: [{
+      data: statusData.values,
+      backgroundColor: ['rgba(245,166,35,0.8)', 'rgba(79,142,247,0.8)', 'rgba(61,214,140,0.8)'],
+      borderColor: ['#f5a623', '#4f8ef7', '#3dd68c'],
+      borderWidth: 1,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: {
+      legend: { position: 'right', labels: { boxWidth: 12, padding: 12, font: { size: 11 } } }
+    },
+    cutout: '65%',
+  }
+});
+
+// Bar chart
+new Chart(document.getElementById('barChart'), {
+  type: 'bar',
+  data: {
+    labels: monthlyLabels,
+    datasets: [{
+      label: 'Hours',
+      data: monthlyHours,
+      backgroundColor: 'rgba(245,166,35,0.25)',
+      borderColor: '#f5a623',
+      borderWidth: 1,
+      borderRadius: 4,
+    }]
+  },
+  options: {
+    responsive: true,
+    maintainAspectRatio: true,
+    plugins: { legend: { display: false } },
+    scales: {
+      y: { grid: { color: '#2a3040' }, beginAtZero: true },
+      x: { grid: { display: false } }
+    }
+  }
+});
+</script>
+{% endblock %}

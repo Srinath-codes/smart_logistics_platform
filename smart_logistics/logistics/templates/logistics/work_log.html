@@ -1,0 +1,124 @@
+{% extends 'logistics/base.html' %}
+{% block title %}Work Log — SmartLogix{% endblock %}
+{% block page_title %}Work Log{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h1 class="page-heading">Work <span>Log</span></h1>
+    <p class="page-desc">Track your daily hours · Total: {{ total_hours }}h logged</p>
+  </div>
+  <a href="{% url 'employee_dashboard' %}" class="btn btn-secondary">← Back</a>
+</div>
+
+<div class="dashboard-grid">
+  <!-- Log Hours Form -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Log Today's Hours</div>
+      <div class="card-subtitle">One entry per day</div>
+    </div>
+    <form method="post">
+      {% csrf_token %}
+      <div class="form-group">
+        <label class="form-label">Date *</label>
+        {{ form.date }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Hours Worked *</label>
+        {{ form.hours }}
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        {{ form.notes }}
+      </div>
+      <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">Save Log</button>
+    </form>
+  </div>
+
+  <!-- Calendar -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">{{ current_month }}</div>
+      <div class="card-subtitle">Hours logged this month</div>
+    </div>
+    <div class="calendar">
+      <div class="calendar-header">
+          <div class="cal-day-header">Mon</div>
+        <div class="cal-day-header">Tue</div>
+        <div class="cal-day-header">Wed</div>
+        <div class="cal-day-header">Thu</div>
+        <div class="cal-day-header">Fri</div>
+        <div class="cal-day-header">Sat</div>
+        <div class="cal-day-header">Sun</div>
+      </div>
+      <div class="calendar-grid">
+        {% for week in calendar_weeks %}
+        <div class="calendar-week">
+          {% for day in week %}
+          {% if day.date %}
+          <div class="calendar-day {% if day.hours %}has-log{% endif %} {% if day.today %}today{% endif %}"
+               title="{% if day.hours %}{{ day.hours }}h{% endif %}">
+            <span class="day-num">{{ day.date.day }}</span>
+            {% if day.hours %}<span class="day-hours">{{ day.hours }}h</span>{% endif %}
+          </div>
+          {% else %}
+          <div class="calendar-day empty"></div>
+          {% endif %}
+          {% endfor %}
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    <div style="display:flex;gap:14px;margin-top:16px;font-size:11px;color:var(--text3);font-family:var(--mono);">
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:12px;height:12px;border-radius:3px;background:var(--amber-dim);border:1px solid rgba(245,166,35,0.3);"></div>
+        Hours logged
+      </div>
+      <div style="display:flex;align-items:center;gap:6px;">
+        <div style="width:12px;height:12px;border-radius:3px;border:1px solid var(--amber);"></div>
+        Today
+      </div>
+    </div>
+  </div>
+
+  <!-- Log History -->
+  <div class="card full-width">
+    <div class="card-header">
+      <div class="card-title">Log History</div>
+      <div class="card-subtitle">All recorded work hours</div>
+    </div>
+    {% if logs %}
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr><th>Date</th><th>Day</th><th>Hours</th><th>Notes</th><th>Logged On</th></tr>
+        </thead>
+        <tbody>
+          {% for wl in logs %}
+          <tr>
+            <td style="font-family:var(--mono);font-size:13px;font-weight:600;color:var(--text);">{{ wl.date|date:"Y-m-d" }}</td>
+            <td style="color:var(--text3);font-size:13px;">{{ wl.date|date:"l" }}</td>
+            <td><span class="badge badge-amber">{{ wl.hours }}h</span></td>
+            <td style="font-size:13px;color:var(--text3);">{{ wl.notes|default:"—" }}</td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--text3);">{{ wl.created_at|date:"M d, H:i" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">◷</div>
+      <div class="empty-text">No work logs yet — start logging your hours above</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Simple template filter polyfill for split — handled in view
+</script>
+{% endblock %}

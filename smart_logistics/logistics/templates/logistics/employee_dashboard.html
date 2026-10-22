@@ -1,0 +1,208 @@
+{% extends 'logistics/base.html' %}
+{% block title %}My Dashboard — SmartLogix{% endblock %}
+{% block page_title %}My Dashboard{% endblock %}
+
+{% block content %}
+<!-- Clock In/Out Banner -->
+<div class="clock-banner">
+  <div class="clock-status">
+    {% if clocked_in %}
+      <div class="status-dot"></div>
+      Currently Clocked In
+    {% else %}
+      <div style="width:6px;height:6px;border-radius:50%;background:var(--text3);"></div>
+      Not Clocked In
+    {% endif %}
+  </div>
+  <div class="clock-actions">
+    <form method="post" action="{% url 'entry_exit_log' %}">
+      {% csrf_token %}
+      {% if not clocked_in %}
+      <input type="hidden" name="log_type" value="entry">
+      <button type="submit" class="btn btn-green btn-sm">↳ Clock In</button>
+      {% else %}
+      <input type="hidden" name="log_type" value="exit">
+      <button type="submit" class="btn btn-danger btn-sm">↩ Clock Out</button>
+      {% endif %}
+    </form>
+  </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid">
+  <div class="stat-card amber">
+    <div class="stat-icon amber">◎</div>
+    <div class="stat-value">{{ total_assignments }}</div>
+    <div class="stat-label">Assignments</div>
+  </div>
+  <div class="stat-card blue">
+    <div class="stat-icon blue">⏳</div>
+    <div class="stat-value">{{ pending_tasks.count }}</div>
+    <div class="stat-label">Pending Tasks</div>
+  </div>
+  <div class="stat-card green">
+    <div class="stat-icon green">✓</div>
+    <div class="stat-value">{{ completed_tasks }}</div>
+    <div class="stat-label">Completed</div>
+  </div>
+  <div class="stat-card purple">
+    <div class="stat-icon purple">◷</div>
+    <div class="stat-value">{{ week_hours }}</div>
+    <div class="stat-label">Hours (7d)</div>
+  </div>
+</div>
+
+<div class="dashboard-grid">
+  <!-- Assigned Tasks -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">My Tasks</div>
+        <div class="card-subtitle">Assigned work items</div>
+      </div>
+    </div>
+    {% if assignments %}
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Task</th><th>Status</th><th>Due</th><th></th></tr></thead>
+        <tbody>
+          {% for a in assignments %}
+          <tr>
+            <td>
+              <div style="font-weight:600;color:var(--text);font-size:13px;">{{ a.title }}</div>
+              <div style="font-size:11px;color:var(--text3);margin-top:2px;">{{ a.description|truncatechars:50 }}</div>
+            </td>
+            <td>
+              {% if a.status == 'assigned' %}<span class="badge badge-amber">Assigned</span>
+              {% elif a.status == 'in_progress' %}<span class="badge badge-blue">In Progress</span>
+              {% else %}<span class="badge badge-green">Done</span>{% endif %}
+            </td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--text3);">{{ a.due_date|default:"—" }}</td>
+            <td>
+              {% if a.status != 'completed' %}
+              <form method="post" action="{% url 'update_assignment_status' a.pk %}">
+                {% csrf_token %}
+                <select name="status" class="form-select" style="width:auto;padding:4px 28px 4px 8px;font-size:12px;" onchange="this.form.submit()">
+                  {% for val, label in a.STATUS_CHOICES %}
+                  <option value="{{ val }}" {% if a.status == val %}selected{% endif %}>{{ label }}</option>
+                  {% endfor %}
+                </select>
+              </form>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">◎</div>
+      <div class="empty-text">No tasks assigned yet</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- My Tickets -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">My Tickets</div>
+        <div class="card-subtitle">Issues &amp; requests</div>
+      </div>
+      <a href="{% url 'create_ticket' %}" class="btn btn-primary btn-sm">+ New</a>
+    </div>
+    {% if tickets %}
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Title</th><th>Priority</th><th>Status</th><th>Date</th></tr></thead>
+        <tbody>
+          {% for t in tickets %}
+          <tr>
+            <td style="font-weight:500;color:var(--text);">{{ t.title|truncatechars:28 }}</td>
+            <td>
+              <span class="priority-indicator priority-{{ t.priority }}">
+                <span class="priority-dot"></span>{{ t.get_priority_display }}
+              </span>
+            </td>
+            <td>
+              {% if t.status == 'open' %}<span class="badge badge-red">Open</span>
+              {% elif t.status == 'in_review' %}<span class="badge badge-amber">Review</span>
+              {% elif t.status == 'resolved' %}<span class="badge badge-green">Resolved</span>
+              {% else %}<span class="badge badge-gray">Closed</span>{% endif %}
+            </td>
+            <td style="font-family:var(--mono);font-size:11px;color:var(--text3);">{{ t.created_at|date:"M d" }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">◈</div>
+      <div class="empty-text">No tickets raised yet</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Recent Work Logs -->
+  <div class="card">
+    <div class="card-header">
+      <div>
+        <div class="card-title">Recent Work Logs</div>
+        <div class="card-subtitle">Last 7 days</div>
+      </div>
+      <a href="{% url 'work_log' %}" class="btn btn-secondary btn-sm">Log Hours →</a>
+    </div>
+    {% if work_logs %}
+    <div class="table-wrapper">
+      <table>
+        <thead><tr><th>Date</th><th>Hours</th><th>Notes</th></tr></thead>
+        <tbody>
+          {% for wl in work_logs %}
+          <tr>
+            <td style="font-family:var(--mono);font-size:13px;">{{ wl.date|date:"D, M d" }}</td>
+            <td>
+              <span class="badge badge-amber">{{ wl.hours }}h</span>
+            </td>
+            <td style="font-size:12px;color:var(--text3);">{{ wl.notes|default:"—"|truncatechars:30 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">◷</div>
+      <div class="empty-text">No work logs yet</div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Entry/Exit Log -->
+  <div class="card">
+    <div class="card-header">
+      <div class="card-title">Entry / Exit Log</div>
+      <div class="card-subtitle">Today's activity</div>
+    </div>
+    {% if entry_logs %}
+    <ul class="timeline">
+      {% for log in entry_logs %}
+      <li class="timeline-item">
+        <div class="timeline-dot {{ log.log_type }}"></div>
+        <div class="timeline-content">
+          <div class="timeline-label">{{ log.get_log_type_display }}</div>
+          <div class="timeline-time">{{ log.timestamp|date:"D, M d · H:i" }}</div>
+        </div>
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-icon">↳</div>
+      <div class="empty-text">No entries today</div>
+    </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
