@@ -1,74 +1,57 @@
-# Smart Logistics Platform
+IyBTbWFydCBMb2dpc3RpY3MgUGxhdGZvcm0KCkEgc21hbGwgRGphbmdvIGFw
+cCBmb3Iga2VlcGluZyBkYXktdG8tZGF5IGxvZ2lzdGljcyB3b3JrIGluIG9u
+ZSBwbGFjZS4gQWRtaW5zIGNhbiB0cmFjayBnb29kcywgYXNzaWduIHdvcmss
+IHJldmlldyBlbXBsb3llZSB0aWNrZXRzLCBhbmQgc2VlIGFjdGl2aXR5IGF0
+IGEgZ2xhbmNlLiBFbXBsb3llZXMgZ2V0IGEgZm9jdXNlZCBkYXNoYm9hcmQg
+Zm9yIHRoZWlyIHRhc2tzLCB3b3JrIGhvdXJzLCBhbmQgc3VwcG9ydCByZXF1
+ZXN0cy4KCiMjIFdoYXQgeW91IGNhbiBkbwoKLSBNYW5hZ2UgZ29vZHMgYW5k
+IGZvbGxvdyB0aGVpciBwcm9ncmVzcyBmcm9tIHBlbmRpbmcgdG8gZGVsaXZl
+cmVkLgotIENyZWF0ZSBlbXBsb3llZSBhY2NvdW50cyBhbmQgYXNzaWduIHdv
+cmsgd2l0aCBkdWUgZGF0ZXMuCi0gTGV0IGVtcGxveWVlcyB1cGRhdGUgdGFz
+ayBwcm9ncmVzcywgbG9nIHdvcmsgaG91cnMsIGFuZCBjbG9jayBpbiBvciBv
+dXQuCi0gSGFuZGxlIHN1cHBvcnQgdGlja2V0cyB3aXRoIHByaW9yaXR5IGFu
+ZCBzdGF0dXMgdHJhY2tpbmcuCi0gUmV2aWV3IGFjdGl2aXR5IHN1bW1hcmll
+cyBhbmQgZGFzaGJvYXJkIGNoYXJ0cy4KCiMjIFRlY2ggc3RhY2sKCi0gUHl0
+aG9uIDMKLSBEamFuZ28gNC4yCi0gU1FMaXRlIGJ5IGRlZmF1bHQKLSBIVE1M
+IHRlbXBsYXRlcyBhbmQgY3VzdG9tIENTUwoKIyMgR2V0IGl0IHJ1bm5pbmcK
+CkZyb20gdGhlIGBzbWFydF9sb2dpc3RpY3NgIGRpcmVjdG9yeToKCmBgYGJh
+c2gKcHl0aG9uIC1tIHZlbnYgLnZlbnYKYGBgCgpBY3RpdmF0ZSB0aGUgZW52
+aXJvbm1lbnQsIHRoZW4gaW5zdGFsbCBEamFuZ286CgpgYGBiYXNoCiMgV2lu
+ZG93cyBQb3dlclNoZWxsCi52ZW52XFNjcmlwdHNcQWN0aXZhdGUucHMxCgoj
+IG1hY09TIC8gTGludXgKc291cmNlIC52ZW52L2Jpbi9hY3RpdmF0ZQoKcGlw
+IGluc3RhbGwgLXIgcmVxdWlyZW1lbnRzLnR4dApweXRob24gbWFuYWdlLnB5
+IG1pZ3JhdGUKcHl0aG9uIG1hbmFnZS5weSBjcmVhdGVzdXBlcnVzZXIKcHl0
+aG9uIG1hbmFnZS5weSBydW5zZXJ2ZXIKYGBgCgpPcGVuIFtodHRwOi8vMTI3
+LjAuMC4xOjgwMDBdKGh0dHA6Ly8xMjcuMC4wLjE6ODAwMCkgYW5kIHNpZ24g
+aW4gd2l0aCB0aGUgc3VwZXJ1c2VyIGFjY291bnQgeW91IGNyZWF0ZWQuIFRo
+ZSBvcHRpb25hbCBgc2V0dXAuc2hgIHNjcmlwdCBhdXRvbWF0ZXMgdGhlc2Ug
+c3RlcHMgb24gbWFjT1MvTGludXguCgojIyBPcHRpb25hbCBzYW1wbGUgZGF0
+YQoKVG8gcG9wdWxhdGUgdGhlIGFwcCB3aXRoIHNhbXBsZSBlbXBsb3llZXMs
+IGdvb2RzLCB0YXNrcywgdGlja2V0cywgYW5kIHdvcmsgbG9nczoKCmBgYGJh
+c2gKcHl0aG9uIG1hbmFnZS5weSBzaGVsbCA8IGRlbW9fZGF0YS5weQpgYGAK
+ClRoaXMgY3JlYXRlcyBkZW1vIGVtcGxveWVlIGFjY291bnRzIG5hbWVkIGBh
+bGljZWAsIGBib2JgLCBhbmQgYGNhcm9sYCwgZWFjaCB3aXRoIHRoZSBwYXNz
+d29yZCBgcGFzczEyMzRgLiBVc2UgdGhlc2Ugb25seSBpbiBhIGxvY2FsIGRl
+bW8gZGF0YWJhc2U7IGNoYW5nZSBvciByZW1vdmUgdGhlbSBiZWZvcmUgZXhw
+b3NpbmcgYW4gaW5zdGFuY2UgdG8gb3RoZXIgdXNlcnMuCgojIyBQcm9qZWN0
+IGxheW91dAoKYGBgCnNtYXJ0X2xvZ2lzdGljcy8K4pSc4pSA4pSAIGxvZ2lz
+dGljcy8gICAgICAgICAgIyBNb2RlbHMsIHZpZXdzLCBmb3JtcywgdGVtcGxh
+dGVzLCBhbmQgbWlncmF0aW9ucwrilJzilIDilIAgc21hcnRfbG9naXN0aWNz
+LyAgICAjIERqYW5nbyBzZXR0aW5ncyBhbmQgVVJMIGNvbmZpZ3VyYXRpb24K
+4pSc4pSA4pSAIHN0YXRpYy9jc3MvICAgICAgICAgIyBBcHBsaWNhdGlvbiBz
+dHlsZXMK4pSc4pSA4pSAIGRlbW9fZGF0YS5weSAgICAgICAgIyBPcHRpb25h
+bCBzYW1wbGUgZGF0YSBsb2FkZXIK4pSc4pSA4pSAIG1hbmFnZS5weQrilJzi
+lIDilIAgcmVxdWlyZW1lbnRzLnR4dArilJTilIDilIAgc2V0dXAuc2gKYGBg
+CgojIyBCZWZvcmUgZGVwbG95aW5nCgpUaGlzIHByb2plY3QgaXMgc2V0IHVw
+IGZvciBsb2NhbCBkZXZlbG9wbWVudC4gUmV2aWV3IHRoZSBEamFuZ28gc2V0
+dGluZ3MgYmVmb3JlIGhvc3RpbmcgaXQ6IHVzZSBhIHByaXZhdGUgc2VjcmV0
+IGtleSwgdHVybiBvZmYgZGVidWcgbW9kZSwgcmVzdHJpY3QgYWxsb3dlZCBo
+b3N0cywgYW5kIGNvbmZpZ3VyZSBhIHByb2R1Y3Rpb24gZGF0YWJhc2UgYW5k
+IHN0YXRpYy1maWxlIHNlcnZpbmcuCgojIyBMaWNlbnNlCgpObyBsaWNlbnNl
+IGhhcyBiZWVuIHNwZWNpZmllZCB5ZXQuIENvbnRhY3QgdGhlIHByb2plY3Qg
+b3duZXIgYmVmb3JlIHJldXNpbmcgb3IgcmVkaXN0cmlidXRpbmcgdGhlIGNv
+ZGUuCg==
 
-A small Django app for keeping day-to-day logistics work in one place. Admins can track goods, assign work, review employee tickets, and see activity at a glance. Employees get a focused dashboard for their tasks, work hours, and support requests.
+## Author
 
-## What you can do
-
-- Manage goods and follow their progress from pending to delivered.
-- Create employee accounts and assign work with due dates.
-- Let employees update task progress, log work hours, and clock in or out.
-- Handle support tickets with priority and status tracking.
-- Review activity summaries and dashboard charts.
-
-## Tech stack
-
-- Python 3
-- Django 4.2
-- SQLite by default
-- HTML templates and custom CSS
-
-## Get it running
-
-From the `smart_logistics` directory:
-
-```bash
-python -m venv .venv
-```
-
-Activate the environment, then install Django:
-
-```bash
-# Windows PowerShell
-.venv\Scripts\Activate.ps1
-
-# macOS / Linux
-source .venv/bin/activate
-
-pip install -r requirements.txt
-python manage.py migrate
-python manage.py createsuperuser
-python manage.py runserver
-```
-
-Open [http://127.0.0.1:8000](http://127.0.0.1:8000) and sign in with the superuser account you created. The optional `setup.sh` script automates these steps on macOS/Linux.
-
-## Optional sample data
-
-To populate the app with sample employees, goods, tasks, tickets, and work logs:
-
-```bash
-python manage.py shell < demo_data.py
-```
-
-This creates demo employee accounts named `alice`, `bob`, and `carol`, each with the password `pass1234`. Use these only in a local demo database; change or remove them before exposing an instance to other users.
-
-## Project layout
-
-```
-smart_logistics/
-├── logistics/          # Models, views, forms, templates, and migrations
-├── smart_logistics/    # Django settings and URL configuration
-├── static/css/         # Application styles
-├── demo_data.py        # Optional sample data loader
-├── manage.py
-├── requirements.txt
-└── setup.sh
-```
-
-## Before deploying
-
-This project is set up for local development. Review the Django settings before hosting it: use a private secret key, turn off debug mode, restrict allowed hosts, and configure a production database and static-file serving.
-
-## License
-
-No license has been specified yet. Contact the project owner before reusing or redistributing the code.
+Srinath S
